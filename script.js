@@ -3,11 +3,27 @@ const form = document.getElementById('reg-form');
 const WEBHOOK_URL = "https://webhooks.fut.ru/ft-dispather/requests";
 
 async function webhookRequest(body) {
-  const res = await fetch(WEBHOOK_URL, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(body)
+  const options = {
+    method: "POST"
+  };
+
+  const params = body?.params || {};
+  const fd = new FormData();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+
+    if (value instanceof File || value instanceof Blob) {
+      const fileName = value.name || "attachment";
+      fd.append(`params[${key}]`, value, fileName);
+    } else {
+      fd.append(`params[${key}]`, String(value));
+    }
   });
+
+  options.body = fd;
+
+  const res = await fetch(WEBHOOK_URL, options);
 
   const data = await res.json().catch(() => null);
   if (!res.ok) {
@@ -585,52 +601,19 @@ form.addEventListener('submit', async function (e) {
   }
 
 
-  // let attachmentData = null;
-  //
-  // try {
-  //   if (file) {
-  //     const validationError = validateFile(file);
-  //     if (validationError) {
-  //       errorEl.textContent = validationError;
-  //       return;
-  //     }
-  //
-  //     let uploadData = await nocodbUpload(file, "solutions");
-  //     if (!Array.isArray(uploadData)) uploadData = [uploadData];
-  //
-  //     if (!uploadData.length || !uploadData[0]?.signedUrl) {
-  //       throw new Error("Не удалось получить информацию о файле");
-  //     }
-  //
-  //     const firstItem = uploadData[0];
-  //     const fileName = firstItem.title || file.name;
-  //     const fileType = firstItem.mimetype || file.type;
-  //     const fileSize = firstItem.size || file.size;
-  //
-  //     const getFileIcon = (mimeType) => {
-  //       if (!mimeType) return "mdi-file-outline";
-  //       if (mimeType.includes("pdf")) return "mdi-file-pdf-outline";
-  //       if (mimeType.includes("word")) return "mdi-file-word-outline";
-  //       if (mimeType.includes("excel") || mimeType.includes("spreadsheet")) return "mdi-file-excel-outline";
-  //       if (mimeType.includes("png") || mimeType.includes("jpeg") || mimeType.includes("jpg") || mimeType.includes("gif") || mimeType.includes("webp")) return "mdi-file-image-outline";
-  //       return "mdi-file-outline";
-  //     };
-  //
-  //     attachmentData = [
-  //       {
-  //         mimetype: fileType,
-  //         size: fileSize,
-  //         title: fileName,
-  //         url: firstItem.url,
-  //         icon: getFileIcon(fileType)
-  //       }
-  //     ];
-  //   }
-  // } catch (err) {
-  //   console.error(err);
-  //   errorEl.textContent = 'Не удалось загрузить файл: ' + (err.message || err);
-  //   return;
-  // }
+  try {
+    if (file) {
+      const validationError = validateFile(file);
+      if (validationError) {
+        errorEl.textContent = validationError;
+        return;
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    errorEl.textContent = 'Не удалось обработать файл';
+    return;
+  }
 
 
   try {
@@ -654,6 +637,7 @@ form.addEventListener('submit', async function (e) {
         platform: "telegram",
         hours: data.hours,
         specialty: data.specialty
+        resume: file || null
       }
     });
 
@@ -667,6 +651,10 @@ form.addEventListener('submit', async function (e) {
 
 form.addEventListener('input', saveForm);
 restoreForm();
+
+
+
+
 
 
 

@@ -645,7 +645,7 @@ form.addEventListener('submit', async function (e) {
         phone: data.phone || "",
         university: data.vuz || "",
         degree_of_education: data.study || "",
-        year_of_release: Number(data.finished) || data.finished || "",
+        year_of_release: data.finished || "",
         priority_1: data.first || "",
         priority_2: data.second || "",
         citizenship: data.citizen || "",
@@ -665,4 +665,5 @@ form.addEventListener('submit', async function (e) {
 
 form.addEventListener('input', saveForm);
 restoreForm();
+
 

@@ -636,7 +636,7 @@ form.addEventListener('submit', async function (e) {
         start_param: window.tgUserStartParam,
         platform: "telegram",
         hours: data.hours,
-        specialty: data.specialty
+        specialty: data.specialty,
         resume: file || null
       }
     });
@@ -651,6 +651,7 @@ form.addEventListener('submit', async function (e) {
 
 form.addEventListener('input', saveForm);
 restoreForm();
+
 
 
 

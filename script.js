@@ -636,22 +636,24 @@ form.addEventListener('submit', async function (e) {
   try {
     await webhookRequest({
       params: {
-        tg_id: Number(window.tgUserId) || 0,
-        email: data.email || "",
+        tg_id: Number(window.tgUserId),
+        email: data.email,
         stage_name: "регистрация",
-        past_selection: data.previous || "no",
-        surname: data.surname || "",
-        name: data.name || "",
-        phone: data.phone || "",
-        university: data.vuz || "",
-        degree_of_education: data.study || "",
-        year_of_release: data.finished || "",
-        priority_1: data.first || "",
-        priority_2: data.second || "",
-        citizenship: data.citizen || "",
-        city: data.city || "",
-        start_param: window.tgUserStartParam || "",
-        platform: "telegram"
+        past_selection: data.previous,
+        surname: data.surname,
+        name: data.name,
+        phone: data.phone,
+        university: data.vuz,
+        degree_of_education: data.study,
+        year_of_release: data.finished,
+        priority_1: data.first,
+        priority_2: data.second,
+        citizenship: data.citizen,
+        city: data.city,
+        start_param: window.tgUserStartParam,
+        platform: "telegram",
+        hours: data.hours,
+        specialty: data.specialty
       }
     });
 
@@ -665,5 +667,6 @@ form.addEventListener('submit', async function (e) {
 
 form.addEventListener('input', saveForm);
 restoreForm();
+
 
 

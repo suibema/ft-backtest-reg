@@ -5,7 +5,7 @@ const WEBHOOK_URL = "https://webhooks.fut.ru/ft-dispather/requests";
 async function webhookRequest(body) {
   const res = await fetch(WEBHOOK_URL, {
     method: "POST",
-    headers: { "content-type": "multipart/form-data" },
+    headers: { "content-type": "application/json", "accept": "application/json" },
     body: JSON.stringify(body)
   });
 
@@ -620,8 +620,7 @@ form.addEventListener('submit', async function (e) {
         start_param: window.tgUserStartParam,
         platform: "telegram",
         hours: data.hours,
-        specialty: data.specialty,
-        resume: file || null
+        specialty: data.specialty
       }
     });
 
@@ -635,6 +634,7 @@ form.addEventListener('submit', async function (e) {
 
 form.addEventListener('input', saveForm);
 restoreForm();
+
 
 
 

@@ -23,6 +23,20 @@ async function webhookRequest(body) {
 
   options.body = fd;
 
+  console.log('--- FormData before send ---');
+  for (const [key, value] of fd.entries()) {
+    if (value instanceof File) {
+      console.log(key, {
+        type: 'File',
+        name: value.name,
+        size: value.size,
+        mime: value.type
+      });
+    } else {
+      console.log(key, value);
+    }
+  }
+  
   const res = await fetch(WEBHOOK_URL, options);
 
   const data = await res.json().catch(() => null);

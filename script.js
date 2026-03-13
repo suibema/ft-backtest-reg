@@ -3,11 +3,27 @@ const form = document.getElementById('reg-form');
 const WEBHOOK_URL = "https://webhooks.fut.ru/ft-dispather/requests";
 
 async function webhookRequest(body) {
-  const res = await fetch(WEBHOOK_URL, {
-    method: "POST",
-    headers: { "content-type": "application/json", "accept": "application/json" },
-    body: JSON.stringify(body)
+  const options = {
+    method: "POST"
+  };
+
+  const params = body?.params || {};
+  const fd = new FormData();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+
+    if (value instanceof File || value instanceof Blob) {
+      const fileName = value.name || "attachment";
+      fd.append(`params[${key}]`, value, fileName);
+    } else {
+      fd.append(`params[${key}]`, String(value));
+    }
   });
+
+  options.body = fd;
+
+  const res = await fetch(WEBHOOK_URL, options);
 
   const data = await res.json().catch(() => null);
   if (!res.ok) {
@@ -603,24 +619,25 @@ form.addEventListener('submit', async function (e) {
   try {
     await webhookRequest({
       params: {
-        tg_id: Number(window.tgUserId),
-        email: data.email,
+        tg_id: Number(window.tgUserId) || 0,
+        email: data.email || "",
         stage_name: "регистрация",
-        past_selection: data.previous,
-        surname: data.surname,
-        name: data.name,
-        phone: data.phone,
-        university: data.vuz,
-        degree_of_education: data.study,
-        year_of_release: data.finished,
-        priority_1: data.first,
-        priority_2: data.second,
-        citizenship: data.citizen,
-        city: data.city,
-        start_param: window.tgUserStartParam,
+        past_selection: data.previous || "no",
+        surname: data.surname || "",
+        name: data.name || "",
+        phone: data.phone || "",
+        university: data.vuz || "",
+        degree_of_education: data.study || "",
+        year_of_release: Number(data.finished) || data.finished || "",
+        priority_1: data.first || "",
+        priority_2: data.second || "",
+        citizenship: data.citizen || "",
+        city: data.city || "",
+        start_param: window.tgUserStartParam || "",
         platform: "telegram",
         hours: data.hours,
-        specialty: data.specialty
+        specialty: data.specialty,
+        resume: file || null
       }
     });
 
@@ -634,9 +651,6 @@ form.addEventListener('submit', async function (e) {
 
 form.addEventListener('input', saveForm);
 restoreForm();
-
-
-
 
 
 

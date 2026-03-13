@@ -3,27 +3,11 @@ const form = document.getElementById('reg-form');
 const WEBHOOK_URL = "https://webhooks.fut.ru/ft-dispather/requests";
 
 async function webhookRequest(body) {
-  const options = {
-    method: "POST"
-  };
-
-  const params = body?.params || {};
-  const fd = new FormData();
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === "") return;
-
-    if (value instanceof File || value instanceof Blob) {
-      const fileName = value.name || "attachment";
-      fd.append(`params[${key}]`, value, fileName);
-    } else {
-      fd.append(`params[${key}]`, String(value));
-    }
+  const res = await fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: { "content-type": "multipart/form-data" },
+    body: JSON.stringify(body)
   });
-
-  options.body = fd;
-
-  const res = await fetch(WEBHOOK_URL, options);
 
   const data = await res.json().catch(() => null);
   if (!res.ok) {
@@ -651,6 +635,7 @@ form.addEventListener('submit', async function (e) {
 
 form.addEventListener('input', saveForm);
 restoreForm();
+
 
 
 
